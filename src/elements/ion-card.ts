@@ -64,7 +64,7 @@ export class IonCard extends IonElement {
       function (cssSelector: string) {
         // Define a docQuery function within the browser context
         function docQuery(source: Document | Element, query: string): Element {
-          const result = source.querySelector(query);
+          const result: any = source.querySelector(query);
           if (!result) {
             throw new Error(`Element ${query} cannot be found (nullish)`);
           }

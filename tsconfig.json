@@ -8,6 +8,5 @@
     "skipLibCheck": true, // Optional: speeds up compilation and avoids errors in node_modules
     "strict": true
   },
-  "include": ["src/elements/**/*", "src/camera/**/*", "src/gallery/**/*", "src/pages/**/*"]
 }
 
