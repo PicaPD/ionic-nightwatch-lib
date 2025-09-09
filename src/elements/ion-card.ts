@@ -62,11 +62,24 @@ export class IonCard extends IonElement {
     // Execute script to open the end options for this specific element
     await this.app.execute(
       function (cssSelector: string) {
+        // Define a docQuery function within the browser context
+        function docQuery(source: Document | Element, query: string): Element {
+          const result = source.querySelector(query);
+          if (!result) {
+            throw new Error(`Element ${query} cannot be found (nullish)`);
+          }
+          if (!(result instanceof Element)) {
+            throw new Error(
+              `Element ${query} is ${result.className}, not Element`,
+            );
+          }
+          return result;
+        }
         // Find the element by its ID
-        const element: Element = IonCard.docQuery(document, cssSelector);
+        const element: Element = docQuery(document, cssSelector);
 
         // Find the parent ion-item-sliding or the element itself if it's the sliding container
-        const slidingElement = IonCard.docQuery(element, "ion-item-sliding");
+        const slidingElement = docQuery(element, "ion-item-sliding");
 
         (slidingElement as any).open("end");
       },
@@ -121,17 +134,5 @@ export class IonCard extends IonElement {
     const header = `${this.xpath}//ion-card-header`;
     console.log(`Finding header value for ${header}`);
     return this.app.getText(header);
-  }
-
-  private static docQuery(source: Document | Element, query: string): Element {
-    const result: any = document.querySelector(query);
-    if (!result) {
-      throw Error(`Element ${query} cannot be found (nullish)`);
-    }
-    if (!(result instanceof Element)) {
-      throw Error(`Element ${query} is ${result.className}, not Element`);
-    }
-
-    return result;
   }
 }
