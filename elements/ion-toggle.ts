@@ -27,7 +27,6 @@ export class IonToggle extends IonElement {
   /**
    * Click a toggle switch
    *
-   * @param ionToggle the XPath ID of an ion-toggle element
    */
   async click() {
     // Pierce the shadow DOM and access the underlying element
@@ -78,6 +77,6 @@ export class IonToggle extends IonElement {
     const toggle = this;
     await this.app.waitUntil(async function () {
       return state === (await toggle.read());
-    }, this.app.globals.waitForConditionTimeout);
+    }, this.app.globals.waitForConditionTimeout ?? IonToggle.FALLBACK_WAIT);
   }
 }

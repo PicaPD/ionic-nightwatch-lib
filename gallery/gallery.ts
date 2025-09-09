@@ -1,5 +1,5 @@
 import { NightwatchAPI } from "nightwatch";
-import { NativePage } from "../page";
+import { NativePage } from "../pages/page";
 import { Element } from "../elements/elements";
 
 /**

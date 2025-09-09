@@ -1,5 +1,5 @@
 import { NightwatchAPI } from "nightwatch";
-import { NativePage } from "../page";
+import { NativePage } from "../pages/page";
 
 /**
  * Named variables for building {@link Camera} objects

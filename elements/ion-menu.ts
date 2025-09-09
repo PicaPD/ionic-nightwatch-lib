@@ -1,6 +1,6 @@
 import { NightwatchAPI } from "nightwatch";
 import { IonElement } from "./elements";
-import { IonPage } from "../page";
+import { IonPage } from "../pages/page";
 
 export class IonMenu extends IonElement {
   protected readonly xpath: string;

@@ -1,6 +1,6 @@
 import { NightwatchAPI } from "nightwatch";
 import { IonElement } from "./elements";
-import { Page } from "../page";
+import { Page } from "../pages/page";
 
 export class IonInput extends IonElement {
   protected xpath: string;
@@ -25,7 +25,7 @@ export class IonInput extends IonElement {
   /**
    * Fill the input field
    *
-   * @param data: data with which to fill the field
+   * @param data - data with which to fill the field
    */
   public async fill(data: string) {
     // Try to hide the keyboard just in case it was left open

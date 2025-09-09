@@ -11,7 +11,7 @@ export class IonActionSheet extends Element {
   /**
    * Build an intractable IonActionSheet object
    *
-   * @see {@link elements:Element}
+   * @see {@link Element}
    */
   constructor(app: NightwatchAPI) {
     super(app);

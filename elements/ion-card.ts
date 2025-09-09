@@ -1,6 +1,6 @@
 import { ElementResult, NightwatchAPI } from "nightwatch";
 import { IonElement } from "./elements";
-import { IonPage } from "../page";
+import { IonPage } from "../pages/page";
 
 export class IonCard extends IonElement {
   protected readonly xpath: string;
@@ -63,29 +63,15 @@ export class IonCard extends IonElement {
     await this.app.execute(
       function (cssSelector: string) {
         // Find the element by its ID
-        const element = document.querySelector(cssSelector);
+        const element: Element = IonCard.docQuery(document, cssSelector);
 
-        if (element && element instanceof Element) {
-          // Find the parent ion-item-sliding or the element itself if it's the sliding container
-          const slidingElement = element.querySelector("ion-item-sliding");
+        // Find the parent ion-item-sliding or the element itself if it's the sliding container
+        const slidingElement = IonCard.docQuery(element, "ion-item-sliding");
 
-          if (!slidingElement) {
-            throw Error(`slidingElement is nullish`);
-          }
-          if (typeof (slidingElement as any).open !== "function") {
-            throw Error(`slidingElement.open is not a function`);
-          }
-          (slidingElement as any).open("end");
-        } else {
-          throw Error(
-            `Element ${cssSelector} is ${element.className}, not Element`,
-          );
-        }
-      },
-      [this.css],
+        (slidingElement as any).open("end");
+      }, [this.css]
     );
 
-    // this.swipeLeft();
     await this.app.waitForElementPresent(this.endOptionXPath);
   }
 
@@ -134,5 +120,21 @@ export class IonCard extends IonElement {
     const header = `${this.xpath}//ion-card-header`;
     console.log(`Finding header value for ${header}`);
     return this.app.getText(header);
+  }
+
+  private static docQuery (source: Document | Element, query: string): Element {
+    const result: any = document.querySelector(query);
+    if (!result) {
+      throw Error(
+        `Element ${query} cannot be found (nullish)`,
+      );
+    }
+    if (!(result instanceof Element)) {
+      throw Error(
+        `Element ${query} is ${result.className}, not Element`,
+      );
+    }
+
+    return result;
   }
 }

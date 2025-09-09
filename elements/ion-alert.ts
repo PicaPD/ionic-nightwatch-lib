@@ -10,11 +10,6 @@ export class IonAlert extends IonElement {
    *
    * @param ion_app - The name of the app element (child of ion-router-outlet)
    * @param app - The Nightwatch API instance
-   * @param heading - Heading text that can be used to identify the alert window
-   * @param body - Body text that can be used to identify the alert window
-   * @param explicit - If true, matches heading and body exactly.
-   * If false, matches anything that contains the arguments.
-   * Defaults to false
    */
   constructor(
     ion_app: string,
@@ -55,6 +50,7 @@ export class IonAlert extends IonElement {
    *  Defaults to false.
    */
   public async clickButton(button: string, explicit?: boolean) {
+    explicit = explicit ?? false;
     const xpath = this.generateButtonXPath(button, explicit);
 
     await this.app.waitForElementVisible(xpath);
@@ -72,9 +68,10 @@ export class IonAlert extends IonElement {
    *
    * @returns true if a matching button was found
    */
-  public async hasButton(option: string, explicit?: boolean) {
+  public async hasButton(button: string, explicit?: boolean) {
+    explicit = explicit ?? false;
     await this.isPresent();
-    const xpath = this.generateButtonXPath(option, explicit);
+    const xpath = this.generateButtonXPath(button, explicit);
     return await this.app.isPresent(xpath);
   }
 
