@@ -30,7 +30,6 @@ interface IOSGalleryOptions extends GalleryOptions {
 export abstract class Gallery extends NativePage {
   public readonly page: string;
   protected readonly photo: string;
-  protected readonly exitBtn: string;
 
   /**
    * Common constructor for all Gallery implementations

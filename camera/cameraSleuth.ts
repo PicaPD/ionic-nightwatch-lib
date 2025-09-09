@@ -4,7 +4,7 @@ import { AndroidCamera2 } from "./androidCamera2";
 import { SecAppCamera } from "./secAppCamera";
 import { IOSCamera } from "./iOSCamera";
 
-class NoSuchCameraException extends Error {}
+export class NoSuchCameraException extends Error {}
 
 /**
  * Run through a list of known camera implementations and determine
@@ -12,7 +12,7 @@ class NoSuchCameraException extends Error {}
  *
  * @param app - The NIghtwatch API interface
  *
- * @returns - A constructed {@link camera:Camera} object specific to
+ * @returns - A constructed {@link Camera} object specific to
  *  the open application
  *
  * @throws {@link NoSuchCameraException}

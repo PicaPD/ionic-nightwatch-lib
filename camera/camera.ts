@@ -10,7 +10,7 @@ import { NativePage } from "../pages/page";
  *  (click this to take a picture)
  * @param okBtn - the XPath of the picture confirmation button
  */
-interface CameraOptions {
+export interface CameraOptions {
   app: NightwatchAPI;
   page: string;
   shutterBtn: string;
@@ -22,15 +22,15 @@ interface CameraOptions {
  * @param backBtn - the XPath of the back button
  *
  */
-interface IOSCameraOptions extends CameraOptions {
+export interface IOSCameraOptions extends CameraOptions {
   backBtn: string;
 }
 
 /**
  * Base class for cameras
- * See {@link AndroidCamera} and {@link IOSCameraBase} for complete implementation
- * See {@link androidCamera2:AndroidCamera2} and
- * {@link iosCamera:IOSCamera} for package-specific implementations
+ * @see {@link AndroidCamera} and {@link IOSCameraBase} for complete implementation
+ * @see {@link androidCamera2.AndroidCamera2} and
+ * {@link iOSCamera.IOSCamera} for package-specific implementations
  */
 export abstract class Camera extends NativePage {
   protected page: string;
@@ -87,7 +87,7 @@ export abstract class Camera extends NativePage {
 
 /**
  * Extensible class for all Android Cameras
- * See {@link androidCamera2:AndroidCamera2} for a specific implementation
+ * See {@link androidCamera2.AndroidCamera2} for a specific implementation
  */
 export class AndroidCamera extends Camera {
   async back() {
