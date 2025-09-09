@@ -29,7 +29,10 @@ export class IonButton extends IonElement {
    * @returns true if the element is clickable
    */
   public async safeWaitToBeClickable(timeout?: number) {
-    const waitTime = timeout ?? this.app.globals.waitForConditionTimeout ?? IonButton.FALLBACK_WAIT;
+    const waitTime =
+      timeout ??
+      this.app.globals.waitForConditionTimeout ??
+      IonButton.FALLBACK_WAIT;
     const start = Date.now();
     let now = start;
     while (!(await this.isClickable())) {

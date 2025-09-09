@@ -6,7 +6,7 @@ export abstract class Element {
   public static readonly ELEMENT_ID = "element-6066-11e4-a52e-4f735466cecf";
 
   // Fallback if this.app.globals.waitForConditionTimeout is undefined
-  protected static readonly FALLBACK_WAIT = 5_000 // milliseconds
+  protected static readonly FALLBACK_WAIT = 5_000; // milliseconds
 
   protected app: NightwatchAPI;
   protected abstract xpath: string;
@@ -65,7 +65,10 @@ export abstract class Element {
    *  the method times out
    */
   public async isPresent(timeout?: number) {
-    const waitTime = timeout ?? this.app.globals.waitForConditionTimeout ?? Element.FALLBACK_WAIT;
+    const waitTime =
+      timeout ??
+      this.app.globals.waitForConditionTimeout ??
+      Element.FALLBACK_WAIT;
     const start = Date.now();
     let now = start;
     while (!(await this.isPresentNow())) {
@@ -96,7 +99,10 @@ export abstract class Element {
    * @returns true if the element is not present in the DOM before the element times out
    */
   public async isGone(timeout?: number) {
-    const waitTime = timeout ?? this.app.globals.waitForConditionTimeout ?? Element.FALLBACK_WAIT;
+    const waitTime =
+      timeout ??
+      this.app.globals.waitForConditionTimeout ??
+      Element.FALLBACK_WAIT;
     const start = Date.now();
     let now = start;
     while (await this.isPresentNow()) {

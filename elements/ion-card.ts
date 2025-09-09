@@ -69,7 +69,8 @@ export class IonCard extends IonElement {
         const slidingElement = IonCard.docQuery(element, "ion-item-sliding");
 
         (slidingElement as any).open("end");
-      }, [this.css]
+      },
+      [this.css],
     );
 
     await this.app.waitForElementPresent(this.endOptionXPath);
@@ -122,17 +123,13 @@ export class IonCard extends IonElement {
     return this.app.getText(header);
   }
 
-  private static docQuery (source: Document | Element, query: string): Element {
+  private static docQuery(source: Document | Element, query: string): Element {
     const result: any = document.querySelector(query);
     if (!result) {
-      throw Error(
-        `Element ${query} cannot be found (nullish)`,
-      );
+      throw Error(`Element ${query} cannot be found (nullish)`);
     }
     if (!(result instanceof Element)) {
-      throw Error(
-        `Element ${query} is ${result.className}, not Element`,
-      );
+      throw Error(`Element ${query} is ${result.className}, not Element`);
     }
 
     return result;
