@@ -5,9 +5,8 @@ import { NightwatchAPI } from "nightwatch";
 import { Element } from "../elements/elements";
 
 export abstract class Page {
-
   // Fallback if this.app.globals.waitForConditionTimeout is undefined
-  protected static readonly FALLBACK_WAIT = 5_000 // milliseconds
+  protected static readonly FALLBACK_WAIT = 5_000; // milliseconds
 
   protected abstract readonly page: string; // Highest specific XPath to the page
   protected readonly app: NightwatchAPI;
@@ -18,7 +17,7 @@ export abstract class Page {
 
   /**
    * Change testing to the Web context
-   * 
+   *
    * @returns NightwatchAPI app for chaining
    */
   async toWeb() {
@@ -44,7 +43,7 @@ export abstract class Page {
 
   /**
    * Change testing to the native context
-   * 
+   *
    * @returns NightwatchAPI app for chaining
    */
   async toNative() {
@@ -63,14 +62,15 @@ export abstract class Page {
 
   /**
    * Wait for the keyboard to be fully deployed
-   * 
+   *
    * @returns true if the keyboard opened
    */
   private static async waitForKeyboardOpen(
     app: NightwatchAPI,
     timeout?: number,
   ) {
-    const waitTime = timeout ?? app.globals.waitForConditionTimeout ?? Page.FALLBACK_WAIT;
+    const waitTime =
+      timeout ?? app.globals.waitForConditionTimeout ?? Page.FALLBACK_WAIT;
     const start = Date.now();
     let now = start;
     while (!(await app.appium.isKeyboardShown())) {
@@ -158,11 +158,10 @@ export abstract class IonPage extends Page {
 }
 
 export abstract class NativePage extends Page {
-
   /**
    * Determine if a native page is open or not
    * Uses an instant-read strategy
-   * 
+   *
    * @returns true if the page is open
    */
   async isOpen() {
