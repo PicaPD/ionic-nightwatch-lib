@@ -29,8 +29,8 @@ export interface IOSCameraOptions extends CameraOptions {
 /**
  * Base class for cameras
  * @see {@link AndroidCamera} and {@link IOSCameraBase} for complete implementation
- * @see {@link androidCamera2.AndroidCamera2} and
- * {@link iOSCamera.IOSCamera} for package-specific implementations
+ * @see {@link camera/androidCamera2.AndroidCamera2} and
+ * {@link camera/iOSCamera.IOSCamera} for package-specific implementations
  */
 export abstract class Camera extends NativePage {
   protected page: string;
@@ -87,7 +87,7 @@ export abstract class Camera extends NativePage {
 
 /**
  * Extensible class for all Android Cameras
- * See {@link androidCamera2.AndroidCamera2} for a specific implementation
+ * See {@link camera/androidCamera2.AndroidCamera2} for a specific implementation
  */
 export class AndroidCamera extends Camera {
   async back() {
