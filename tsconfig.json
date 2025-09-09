@@ -1,0 +1,13 @@
+{
+  "compilerOptions": {
+    "target": "ES2015",
+    "module": "ESNext",
+    "lib": ["ES2015", "DOM"],
+    "moduleResolution": "node",
+    "esModuleInterop": true,
+    "skipLibCheck": true, // Optional: speeds up compilation and avoids errors in node_modules
+    "strict": true
+  },
+  "include": ["elements/**/*"]
+}
+
