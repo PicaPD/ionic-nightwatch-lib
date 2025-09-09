@@ -9,18 +9,18 @@ import { Element } from "../elements/elements";
  * @param photo - An XPath that points to all clickable photo thumbnails
  * @param page - The XPath of the gallery window
  */
-interface GalleryOptions {
+export interface GalleryOptions {
   app: NightwatchAPI;
   photo: string;
   page: string;
 }
 
 /**
- * Named variables for building {@link IOSGallery} objects
+ * Named variables for building {@link gallery/iOSGallery.IOSGallery} objects
  *
  * @param exitBtn - The XPath of the exit button
  */
-interface IOSGalleryOptions extends GalleryOptions {
+export interface IOSGalleryOptions extends GalleryOptions {
   exitBtn: string;
 }
 

@@ -4,7 +4,7 @@ import { MediaModule } from "./mediaModule";
 import { Photopicker } from "./photopicker";
 import { IOSGallery } from "./iOSGallery";
 
-class NoSuchGalleryException extends Error {}
+export class NoSuchGalleryException extends Error {}
 
 /**
  * Run through a list of known gallery implementations and determine
@@ -12,7 +12,7 @@ class NoSuchGalleryException extends Error {}
  *
  * @param app - The NIghtwatch API interface
  *
- * @returns - A constructed {@link gallery:Gallery} object specific to
+ * @returns - A constructed {@link Gallery} object specific to
  *  the open application
  *
  * @throws {@link NoSuchGalleryException}
