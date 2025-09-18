@@ -21,11 +21,11 @@ export abstract class Page {
    * @returns NightwatchAPI app for chaining
    */
   async toWeb() {
-    // Wait for the web context to become available
-    await this.app.waitUntil(async () => {
-      const contexts = await this.app.appium.getContexts();
-      return contexts && contexts.length > 1;
-    }, this.app.globals.waitForConditionTimeout ?? Page.FALLBACK_WAIT);
+    try {
+      this.waitForWebContext();
+    } catch (error) {
+      this.restartWebSession();
+    }
 
     // Identify the web context
     const contexts = await app.appium.getContexts();
@@ -39,6 +39,39 @@ export abstract class Page {
     // Activate the web context
     await app.appium.setContext(webviewContext);
     return app;
+  }
+
+  /**
+   * Nuclear option for recovering disconnected sockets
+   */
+  async restartWebSession() {
+    console.log("It seems that the Web Context connection has been closed. Attempting to recover it...");
+    try {
+      await this.app.appium.resetApp()
+      console.log("Driver reset successful!")
+    }
+    catch (error) {
+      console.log("Driver reset failed. Attempting full restart...")
+      await this.app.end();
+      // Wait a bit for cleanup
+      await new Promise(resolve => setTimeout(resolve, 5000));
+      // Create new session - Nightwatch will use config automatically
+      await this.app.init()
+      console.log("Driver connection refreshed successfully");
+    }
+
+    this.waitForWebContext();
+  }
+
+  /**
+   * Wait for a web session to become available
+   */
+  async waitForWebContext() {
+    // Wait for the web context to become available
+    await this.app.waitUntil(async () => {
+      const contexts = await this.app.appium.getContexts();
+      return contexts && contexts.length > 1;
+    }, this.app.globals.waitForConditionTimeout ?? Page.FALLBACK_WAIT);
   }
 
   /**
