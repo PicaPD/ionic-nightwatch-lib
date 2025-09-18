@@ -24,7 +24,7 @@ export abstract class Page {
     // Wait for the web context to become available
     await this.app.waitUntil(async () => {
       const contexts = await this.app.appium.getContexts();
-      return contexts.length > 1;
+      return context && contexts.length > 1;
     }, this.app.globals.waitForConditionTimeout ?? Page.FALLBACK_WAIT);
 
     // Identify the web context
