@@ -21,26 +21,19 @@ export abstract class Page {
    * @returns NightwatchAPI app for chaining
    */
   async toWeb() {
-    console.log('Switching to Web Context')
-    await this.app.waitUntil(async () => {
-      try {
-        const contexts = await this.app.appium.getContexts();
-        const hasWebview = contexts && contexts.some(ctx => ctx.includes("WEBVIEW"));
-        
-        if (hasWebview) {
-            // Try to switch to webview to verify it's ready
-            const webviewContext = contexts.find(ctx => ctx.includes("WEBVIEW"));
-            if (webviewContext){
-              await this.app.appium.setContext(webviewContext);
-              return true;
-            }
-        }
-        return false;
-      } catch (error) {
-          return false;
-      }
-    }, this.app.globals.waitForConditionTimeout ?? 15000);
-    return app;
+    this.app.waitUntil(async function() {
+        // wait for webview context to be available
+        // initially, this.getContexts() only returns ['NATIVE_APP']
+        const contexts = await this.appium.getContexts();
+
+        return contexts.length > 1;
+    })
+    .perform(async function() {
+      // switch to webview context
+      const contexts = await this.appium.getContexts();  // contexts: ['NATIVE_APP', 'WEBVIEW_<id>']
+      await this.appium.setContext(contexts[1]);
+    });
+    return this.app
   }
 
   /**
@@ -52,7 +45,7 @@ export abstract class Page {
     console.log('Switching to Native Context')
     // Native context is always available
     await this.app.appium.setContext("NATIVE_APP");
-    return app;
+    return this.app;
   }
 
   /**
