@@ -21,17 +21,17 @@ export abstract class Page {
    * @returns NightwatchAPI app for chaining
    */
   async toWeb() {
-    this.app.waitUntil(async function() {
+    await this.app.waitUntil(async () => {
         // wait for webview context to be available
         // initially, this.getContexts() only returns ['NATIVE_APP']
-        const contexts = await this.appium.getContexts();
+        const contexts = await this.app.appium.getContexts();
 
         return contexts.length > 1;
     })
-    .perform(async function() {
+    .perform(async () => {
       // switch to webview context
-      const contexts = await this.appium.getContexts();  // contexts: ['NATIVE_APP', 'WEBVIEW_<id>']
-      await this.appium.setContext(contexts[1]);
+      const contexts = await this.app.appium.getContexts();  // contexts: ['NATIVE_APP', 'WEBVIEW_<id>']
+      await this.app.appium.setContext(contexts[1]);
     });
     return this.app
   }
