@@ -22,57 +22,25 @@ export abstract class Page {
    */
   async toWeb() {
     console.log('Switching to Web Context')
-    try {
-      await this.waitForWebContext();
-    } catch (error) {
-      await this.restartWebSession();
-    }
-
-    // Identify the web context
-    const contexts = await app.appium.getContexts();
-    const webviewContext = contexts.find((ctx) => ctx.includes("WEBVIEW"));
-
-    // Error out if not available
-    if (!webviewContext) {
-      throw new Error("❌ No WEBVIEW context found!");
-    }
-
-    // Activate the web context
-    await app.appium.setContext(webviewContext);
-    return app;
-  }
-
-  /**
-   * Nuclear option for recovering disconnected sockets
-   */
-  async restartWebSession() {
-    console.log("It seems that the Web Context connection has been closed. Attempting to recover it...");
-    try {
-      await this.app.appium.resetApp()
-      console.log("Driver reset successful!")
-    }
-    catch (error) {
-      console.log("Driver reset failed. Attempting full restart...")
-      await this.app.end();
-      // Wait a bit for cleanup
-      await new Promise(resolve => setTimeout(resolve, 5000));
-      // Create new session - Nightwatch will use config automatically
-      await this.app.init()
-      console.log("Driver connection refreshed successfully");
-    }
-
-    await this.waitForWebContext();
-  }
-
-  /**
-   * Wait for a web session to become available
-   */
-  async waitForWebContext() {
-    // Wait for the web context to become available
     await this.app.waitUntil(async () => {
-      const contexts = await this.app.appium.getContexts();
-      return contexts && contexts.length > 1;
-    }, this.app.globals.waitForConditionTimeout ?? Page.FALLBACK_WAIT);
+      try {
+        const contexts = await this.app.appium.getContexts();
+        const hasWebview = contexts && contexts.some(ctx => ctx.includes("WEBVIEW"));
+        
+        if (hasWebview) {
+            // Try to switch to webview to verify it's ready
+            const webviewContext = contexts.find(ctx => ctx.includes("WEBVIEW"));
+            if (webviewContext){
+              await this.app.appium.setContext(webviewContext);
+              return true;
+            }
+        }
+        return false;
+      } catch (error) {
+          return false;
+      }
+    }, this.app.globals.waitForConditionTimeout ?? 15000);
+    return app;
   }
 
   /**
