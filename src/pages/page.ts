@@ -21,10 +21,11 @@ export abstract class Page {
    * @returns NightwatchAPI app for chaining
    */
   async toWeb() {
+    console.log('Switching to Web Context')
     try {
-      this.waitForWebContext();
+      await this.waitForWebContext();
     } catch (error) {
-      this.restartWebSession();
+      await this.restartWebSession();
     }
 
     // Identify the web context
@@ -60,7 +61,7 @@ export abstract class Page {
       console.log("Driver connection refreshed successfully");
     }
 
-    this.waitForWebContext();
+    await this.waitForWebContext();
   }
 
   /**
@@ -80,6 +81,7 @@ export abstract class Page {
    * @returns NightwatchAPI app for chaining
    */
   async toNative() {
+    console.log('Switching to Native Context')
     // Native context is always available
     await this.app.appium.setContext("NATIVE_APP");
     return app;
