@@ -22,6 +22,7 @@ export abstract class Page {
     await this.app.waitUntil(async function() {
       // wait for webview context to be available
       // initially, this.getContexts() only returns ['NATIVE_APP']
+      console.log('Switching to WEBVIEW')
       const contexts = await this.appium.getContexts();
       console.log(`Got Contexts: ${contexts}`);
 
@@ -42,7 +43,9 @@ export abstract class Page {
    */
   async toNative() {
     // Native context is always available
+    console.log('Switching to NATIVE')
     await this.app.appium.setContext("NATIVE_APP");
+    console.log('Switched to NATIVE')
   }
 
   /**
