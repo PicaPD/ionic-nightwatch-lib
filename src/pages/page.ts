@@ -17,35 +17,29 @@ export abstract class Page {
 
   /**
    * Change testing to the Web context
-   *
-   * @returns NightwatchAPI app for chaining
    */
   async toWeb() {
-    await this.app.waitUntil(async () => {
-        // wait for webview context to be available
-        // initially, this.getContexts() only returns ['NATIVE_APP']
-        const contexts = await this.app.appium.getContexts();
+    await this.app.waitUntil(async function() {
+      // wait for webview context to be available
+      // initially, this.getContexts() only returns ['NATIVE_APP']
+      const contexts = await this.appium.getContexts();
 
-        return contexts.length > 1;
+      const webviewContext = contexts.find(ctx => ctx.includes('WEBVIEW'));
+      if (webviewContext !== undefined) {
+        await this.appium.setContext(webviewContext);
+        return true;
+      }
+      return false
     })
-    .perform(async () => {
-      // switch to webview context
-      const contexts = await this.app.appium.getContexts();  // contexts: ['NATIVE_APP', 'WEBVIEW_<id>']
-      await this.app.appium.setContext(contexts[1]);
-    });
-    return this.app
   }
 
   /**
    * Change testing to the native context
    *
-   * @returns NightwatchAPI app for chaining
    */
   async toNative() {
-    console.log('Switching to Native Context')
     // Native context is always available
     await this.app.appium.setContext("NATIVE_APP");
-    return this.app;
   }
 
   /**
@@ -163,17 +157,11 @@ export abstract class NativePage extends Page {
   async isOpen() {
     // Change to native
     await this.toNative();
-    try {
-      const result = await this.app.isPresent({
-        selector: this.page,
-        suppressNotFoundErrors: true,
-      });
-      await this.toWeb();
-      return result;
-    } catch (err) {
-      // Don't leave it in the native context
-      await this.toWeb();
-      return false;
-    }
+    const result = await this.app.isPresent({
+      selector: this.page,
+      suppressNotFoundErrors: true,
+    });
+    await this.toWeb();
+    return result;
   }
 }
