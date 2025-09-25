@@ -23,10 +23,13 @@ export abstract class Page {
       // wait for webview context to be available
       // initially, this.getContexts() only returns ['NATIVE_APP']
       const contexts = await this.appium.getContexts();
+      console.log(`Got Contexts: ${contexts}`);
 
       const webviewContext = contexts.find(ctx => ctx.includes('WEBVIEW'));
       if (webviewContext !== undefined) {
+        console.log('Found a WEBVIEW context');
         await this.appium.setContext(webviewContext);
+        console.log('Switched to Webview');
         return true;
       }
       return false
