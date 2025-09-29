@@ -35,7 +35,9 @@ export abstract class Page {
       const webviewContext = contexts.find(ctx => ctx.includes('WEBVIEW'));
       if (webviewContext !== undefined) {
         console.log('Found a WEBVIEW context');
-        await this.appium.setContext(webviewContext);
+        const setContextResult = await this.appium.setContext(webviewContext);
+        console.log(setContextResult);
+        console.log(`Current context: ${await this.appium.getContext()}`)
         console.log('Switched to Webview');
         return true;
       }
