@@ -134,9 +134,6 @@ export class IOSCameraBase extends Camera {
     await this.toNative();
     await this.app.click(this.backBtn);
     await this.app.waitForElementNotPresent(this.page);
-    console.log('Pausing for the web context...');
-    // Add an explicit wait for the page to load
-    await new Promise(f => setTimeout(f, 10_000));
     await this.toWeb();
   }
 }

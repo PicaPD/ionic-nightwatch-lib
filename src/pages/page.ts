@@ -19,6 +19,9 @@ export abstract class Page {
    * Change testing to the Web context
    */
   async toWeb() {
+    // Add an explicit wait for the page to load
+    console.log('Pausing for the web context...');
+    await new Promise(f => setTimeout(f, 10_000));
     await this.app.waitUntil(async function() {
       // wait for webview context to be available
       // initially, this.getContexts() only returns ['NATIVE_APP']
