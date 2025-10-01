@@ -18,42 +18,52 @@ export abstract class Page {
   /**
    * Change testing to the Web context
    */
-  async toWeb() {
-    // Add an explicit wait for the page to load
-    console.log('Pausing for the web context...');
-    await new Promise(f => setTimeout(f, 10_000));
-    await this.app.waitUntil(async function() {
-      // wait for webview context to be available
-      // initially, this.getContexts() only returns ['NATIVE_APP']
-      console.log('Switching to WEBVIEW')
-      const contexts = await this.appium.getContexts();
-      console.log(`Got Contexts: ${contexts}`);
-      if (!contexts) {
-        return false;
-      }
+  static async toWeb(app: NightwatchAPI) {
+    if ((await app.appium.getContext())?.includes('WEBVIEW')) {
+      console.log('A Web context is active. No change will be made.');
+      return;
+    }
 
-      const webviewContext = contexts.find(ctx => ctx.includes('WEBVIEW'));
-      if (webviewContext !== undefined) {
-        console.log('Found a WEBVIEW context');
-        const setContextResult = await this.appium.setContext(webviewContext);
-        console.log(setContextResult);
-        console.log(`Current context: ${await this.appium.getContext()}`)
-        console.log('Switched to Webview');
-        return true;
+    // Context switching on iOS is fragile and the best way
+    // I've found to reliably change is to RELAUNCH THE GOSHDARN APP
+    if(await app.options.desiredCapabilities?.['platformName'] === 'ios') {    
+      console.log('Relaunching the app');
+      // Terminate the app
+      const bundleId = await app.options.desiredCapabilities?.['appium:bundleId'];
+      if (!bundleId || typeof bundleId !== 'string'){
+        console.warn('WARNING: Could not find an appium:bundleId');
+      } else {
+        await app.execute('mobile: terminateApp', [{bundleId: bundleId}]);
+        await app.pause(3000);
+        // Activate/launch the app
+        await app.execute('mobile: activateApp', [{bundleId: bundleId}]);
+        await app.pause(3000);
       }
-      return false
-    })
+    }
+    
+    // Faithfully copied from Nightwatch's docs
+    app
+      .waitUntil(async function() {
+        // wait for webview context to be available
+        // initially, this.getContexts() only returns ['NATIVE_APP']
+        const contexts = await this.appium.getContexts();
+
+        return contexts.length > 1;
+      })
+      .perform(async function() {
+        // switch to webview context
+        const contexts = await this.appium.getContexts();  // contexts: ['NATIVE_APP', 'WEBVIEW_<id>']
+        await this.appium.setContext(contexts[1]);
+      });
   }
 
   /**
    * Change testing to the native context
    *
    */
-  async toNative() {
+  static async toNative(app: NightwatchAPI) {
     // Native context is always available
-    console.log('Switching to NATIVE')
-    await this.app.appium.setContext("NATIVE_APP");
-    console.log('Switched to NATIVE')
+    await app.appium.setContext("NATIVE_APP");
   }
 
   /**
@@ -170,12 +180,16 @@ export abstract class NativePage extends Page {
    */
   async isOpen() {
     // Change to native
-    await this.toNative();
+    await Page.toNative(this.app);
     const result = await this.app.isPresent({
       selector: this.page,
       suppressNotFoundErrors: true,
     });
-    await this.toWeb();
+
+    // Switching to web on a native page in iOS will crash
+    if (!result) {
+      await Page.toWeb(this.app);
+    }
     return result;
   }
 }
