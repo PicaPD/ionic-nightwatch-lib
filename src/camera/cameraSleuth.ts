@@ -3,6 +3,7 @@ import { Camera } from "./camera";
 import { AndroidCamera2 } from "./androidCamera2";
 import { SecAppCamera } from "./secAppCamera";
 import { IOSCamera } from "./iOSCamera";
+import { Page } from "../pages/page";
 
 export class NoSuchCameraException extends Error {}
 
@@ -20,21 +21,23 @@ export class NoSuchCameraException extends Error {}
  *  either because it is not implemented or it is not open
  */
 export async function findCameraType(app: NightwatchAPI): Promise<Camera> {
-  type CameraConstructor = new (app: NightwatchAPI) => Camera;
-
-  const knownCameraTypes: CameraConstructor[] = [
-    AndroidCamera2,
-    SecAppCamera,
-    IOSCamera,
+  const knownCameraTypes: Camera[] = [
+    new IOSCamera(app),
+    new AndroidCamera2(app),
+    new SecAppCamera(app),
   ];
 
+  // Avoid multiple context switches
+  await Page.toNative(app);
   for (const cameraType of knownCameraTypes) {
-    const camera = new cameraType(app);
-    if (await camera.isOpen()) {
-      console.log(`Found gallery package: ${cameraType.name}`);
-      return camera;
+    const result = await app.isPresent({
+      selector: cameraType.page,
+      suppressNotFoundErrors: true,
+    });
+    if (result) {
+      console.log(`Found camera package: ${cameraType.constructor.name}`);
+      return cameraType;
     }
   }
-
   throw new NoSuchCameraException("Unknown Camera type.");
 }

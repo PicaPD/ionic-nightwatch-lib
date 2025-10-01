@@ -3,6 +3,7 @@ import { Gallery } from "./gallery";
 import { MediaModule } from "./mediaModule";
 import { Photopicker } from "./photopicker";
 import { IOSGallery } from "./iOSGallery";
+import { Page } from "../pages/page";
 
 export class NoSuchGalleryException extends Error {}
 
@@ -20,21 +21,24 @@ export class NoSuchGalleryException extends Error {}
  *  either because it is not implemented or it is not open
  */
 export async function findGalleryType(app: NightwatchAPI): Promise<Gallery> {
-  type GalleryConstructor = new (app: NightwatchAPI) => Gallery;
 
-  const knownGalleryTypes: GalleryConstructor[] = [
-    MediaModule,
-    Photopicker,
-    IOSGallery,
+  const knownGalleryTypes: Gallery[] = [
+    new IOSGallery(app),
+    new MediaModule(app),
+    new Photopicker(app),
   ];
 
+  // Avoid multiple context switches
+  await Page.toNative(app);
   for (const galleryType of knownGalleryTypes) {
-    const gallery = new galleryType(app);
-    if (await gallery.isOpen()) {
-      console.log(`Found gallery package: ${galleryType.name}`);
-      return gallery;
+    const result = await app.isPresent({
+      selector: galleryType.page,
+      suppressNotFoundErrors: true,
+    });
+    if (result) {
+      console.log(`Found gallery package: ${galleryType.constructor.name}`);
+      return galleryType;
     }
   }
-
   throw new NoSuchGalleryException("Unknown Gallery type.");
 }

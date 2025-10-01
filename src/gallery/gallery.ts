@@ -1,5 +1,5 @@
 import { NightwatchAPI } from "nightwatch";
-import { NativePage } from "../pages/page";
+import { Page, NativePage } from "../pages/page";
 import { Element } from "../elements/elements";
 
 /**
@@ -68,10 +68,10 @@ export abstract class Gallery extends NativePage {
    * @param index - The 0-based index of which photo in the gallery to click
    */
   async choosePhoto(index: number) {
-    await this.toNative();
+    await Page.toNative(this.app);
     const photos = await this.app.findElements(this.photo);
     await this.app.elementIdClick(photos[index][Element.ELEMENT_ID]);
-    await this.toWeb();
+    await Page.toWeb(this.app);
   }
 
   /**
@@ -85,10 +85,10 @@ export abstract class Gallery extends NativePage {
  */
 export abstract class AndroidGallery extends Gallery {
   async exit() {
-    await this.toNative();
+    await Page.toNative(this.app);
     await this.app.back();
     await this.app.waitForElementNotPresent(this.page);
-    await this.toWeb();
+    await Page.toWeb(this.app);
   }
 }
 
@@ -109,9 +109,9 @@ export abstract class IOSGalleryBase extends Gallery {
   }
 
   async exit() {
-    await this.toNative();
+    await Page.toNative(this.app);
     await this.app.click(this.exitBtn);
     await this.app.waitForElementNotPresent(this.page);
-    await this.toWeb();
+    await Page.toWeb(this.app);
   }
 }

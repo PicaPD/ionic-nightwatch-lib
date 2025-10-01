@@ -1,5 +1,5 @@
 import { NightwatchAPI } from "nightwatch";
-import { NativePage } from "../pages/page";
+import { Page, NativePage } from "../pages/page";
 
 /**
  * Named variables for building {@link Camera} objects
@@ -33,7 +33,7 @@ export interface IOSCameraOptions extends CameraOptions {
  * {@link camera/iOSCamera.IOSCamera} for package-specific implementations
  */
 export abstract class Camera extends NativePage {
-  protected page: string;
+  public readonly page: string;
   protected shutterBtn: string;
   protected okBtn: string;
 
@@ -78,10 +78,10 @@ export abstract class Camera extends NativePage {
    * Camera app must already be open for this to work
    */
   async takePicture() {
-    await this.toNative();
+    await Page.toNative(this.app);
     await this.app.click(this.shutterBtn);
     await this.app.click(this.okBtn);
-    await this.toWeb();
+    await Page.toWeb(this.app);
   }
 }
 
@@ -91,11 +91,11 @@ export abstract class Camera extends NativePage {
  */
 export class AndroidCamera extends Camera {
   async back() {
-    await this.toNative();
+    await Page.toNative(this.app);
     // Use the phone's back button
     await this.app.back();
     await this.app.waitForElementNotPresent(this.page);
-    await this.toWeb();
+    await Page.toWeb(this.app);
   }
 
   async verifyBack(): Promise<void> {
@@ -122,18 +122,17 @@ export class IOSCameraBase extends Camera {
   }
 
   async verifyBack(): Promise<void> {
-    await this.toNative();
+    await Page.toNative(this.app);
     await this.app.verify.elementPresent(
       this.backBtn,
       "Camera should have a 'back' or 'cancel' button",
     );
-    await this.toWeb();
   }
 
   async back() {
-    await this.toNative();
+    await Page.toNative(this.app);
     await this.app.click(this.backBtn);
     await this.app.waitForElementNotPresent(this.page);
-    await this.toWeb();
+    await Page.toWeb(this.app);
   }
 }
