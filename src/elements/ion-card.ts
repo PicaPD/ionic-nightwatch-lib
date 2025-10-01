@@ -93,7 +93,7 @@ export class IonCard extends IonElement {
    * Open the end option menu and press one of the buttons by name
    *
    * @param name - the text value of the menu button to press
-   * @param effect - Optional. Wait for this element before returning
+   * @param waitFor - Optional. Wait for this element before returning
    */
   async clickEndOption(name: string, waitFor?: string) {
     // Button visibility is tied to item-sliding-active-options-end not item-sliding-active-slide
@@ -101,8 +101,8 @@ export class IonCard extends IonElement {
     await this.openEndOptions();
     await this.app.waitForElementVisible(option);
     await this.app.click(option);
-    if (waitFor){
-      await this.app.waitForElementPresent(waitFor)
+    if (waitFor) {
+      await this.app.waitForElementPresent(waitFor);
     }
   }
 

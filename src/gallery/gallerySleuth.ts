@@ -21,7 +21,6 @@ export class NoSuchGalleryException extends Error {}
  *  either because it is not implemented or it is not open
  */
 export async function findGalleryType(app: NightwatchAPI): Promise<Gallery> {
-
   const knownGalleryTypes: Gallery[] = [
     new IOSGallery(app),
     new MediaModule(app),

@@ -19,40 +19,41 @@ export abstract class Page {
    * Change testing to the Web context
    */
   static async toWeb(app: NightwatchAPI) {
-    if ((await app.appium.getContext())?.includes('WEBVIEW')) {
-      console.log('A Web context is active. No change will be made.');
+    if ((await app.appium.getContext())?.includes("WEBVIEW")) {
+      console.log("A Web context is active. No change will be made.");
       return;
     }
 
     // Context switching on iOS is fragile and the best way
     // I've found to reliably change is to RELAUNCH THE GOSHDARN APP
-    if(await app.options.desiredCapabilities?.['platformName'] === 'ios') {    
-      console.log('Relaunching the app');
+    if ((await app.options.desiredCapabilities?.["platformName"]) === "ios") {
+      console.log("Relaunching the app");
       // Terminate the app
-      const bundleId = await app.options.desiredCapabilities?.['appium:bundleId'];
-      if (!bundleId || typeof bundleId !== 'string'){
-        console.warn('WARNING: Could not find an appium:bundleId');
+      const bundleId =
+        await app.options.desiredCapabilities?.["appium:bundleId"];
+      if (!bundleId || typeof bundleId !== "string") {
+        console.warn("WARNING: Could not find an appium:bundleId");
       } else {
-        await app.execute('mobile: terminateApp', [{bundleId: bundleId}]);
+        await app.execute("mobile: terminateApp", [{ bundleId: bundleId }]);
         await app.pause(3000);
         // Activate/launch the app
-        await app.execute('mobile: activateApp', [{bundleId: bundleId}]);
+        await app.execute("mobile: activateApp", [{ bundleId: bundleId }]);
         await app.pause(3000);
       }
     }
-    
+
     // Faithfully copied from Nightwatch's docs
     app
-      .waitUntil(async function() {
+      .waitUntil(async function () {
         // wait for webview context to be available
         // initially, this.getContexts() only returns ['NATIVE_APP']
         const contexts = await this.appium.getContexts();
 
         return contexts.length > 1;
       })
-      .perform(async function() {
+      .perform(async function () {
         // switch to webview context
-        const contexts = await this.appium.getContexts();  // contexts: ['NATIVE_APP', 'WEBVIEW_<id>']
+        const contexts = await this.appium.getContexts(); // contexts: ['NATIVE_APP', 'WEBVIEW_<id>']
         await this.appium.setContext(contexts[1]);
       });
   }

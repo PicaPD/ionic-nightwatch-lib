@@ -7,6 +7,5 @@
     "esModuleInterop": true,
     "skipLibCheck": true, // Optional: speeds up compilation and avoids errors in node_modules
     "strict": true
-  },
+  }
 }
-
