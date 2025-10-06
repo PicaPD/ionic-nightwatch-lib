@@ -69,4 +69,8 @@ export class IonInput extends IonElement {
     // Try to hide the keyboard again, since iOS often ignores blur()
     await Page.hideKeyboard(app, this);
   }
+
+  public async value() {
+    return await this.app.getValue(this.xpath);
+  }
 }

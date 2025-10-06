@@ -39,7 +39,7 @@ export class IonButton extends IonElement {
       now = Date.now();
       if (now - start > waitTime) {
         console.log(
-          `  \x1b[33m!\x1b[0m Element ${element} was not clickable after ${now - start} milliseconds.`,
+          `  \x1b[33m!\x1b[0m Element ${this.getXPath()} was not clickable after ${now - start} milliseconds.`,
         );
         return false;
       }
@@ -48,7 +48,7 @@ export class IonButton extends IonElement {
       );
     }
     console.log(
-      `  \x1b[32m✔\x1b[0m Element ${element} was clickable after ${now - start} milliseconds.`,
+      `  \x1b[32m✔\x1b[0m Element ${this.getXPath()} was clickable after ${now - start} milliseconds.`,
     );
     return true;
   }
