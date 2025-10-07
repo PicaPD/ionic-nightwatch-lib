@@ -18,16 +18,22 @@ export class IonCard extends IonElement {
    */
   constructor(
     ion_app: string,
-    cardType: string,
     index: number,
     app: NightwatchAPI,
+    cardType?: string,
   ) {
     super(ion_app, app);
     this.app = app;
 
-    this.xpath = `${IonPage.getOpenAppXPath(ion_app)}//ion-card[contains(@class, '${cardType}')][${index + 1}]`;
+    if (cardType) {
+      this.xpath = `${IonPage.getOpenAppXPath(ion_app)}//ion-card[contains(@class, '${cardType}')][${index + 1}]`;
+      this.css = `${ion_app}:not(.ion-page-hidden) ion-card.${cardType}:nth-of-type(${index + 1})`;
+    } else {
+      this.xpath = `${IonPage.getOpenAppXPath(ion_app)}//ion-card[@class='md hydrated'][${index + 1}]`;
+      // Not exclusive
+      this.css = `${ion_app}:not(.ion-page-hidden) ion-card.md.hydrated:nth-of-type(${index + 1})`;
+    }
     this.endOptionXPath = `${this.xpath}//ion-item-sliding[contains(@class, 'item-sliding-active-options-end')]`;
-    this.css = `${ion_app}:not(.ion-page-hidden) ion-card.${cardType}:nth-of-type(${index + 1})`;
   }
 
   /**
@@ -39,14 +45,18 @@ export class IonCard extends IonElement {
    */
   static async getAllCards(
     ion_app: string,
-    cardType: string,
     app: NightwatchAPI,
+    cardType?: string,
   ) {
     const xpath = `${IonPage.getOpenAppXPath(ion_app)}//ion-card[contains(@class, '${cardType}')]`;
     const elements: ElementResult[] = await app.elements("xpath", xpath);
     const cards: IonCard[] = [];
     for (let i = 0; i < elements.length; i++) {
-      cards.push(new IonCard(ion_app, cardType, i, app));
+      if (cardType) {
+        cards.push(new IonCard(ion_app, i, app, cardType));
+      } else {
+        cards.push(new IonCard(ion_app, i, app));
+      }
     }
     return cards;
   }
