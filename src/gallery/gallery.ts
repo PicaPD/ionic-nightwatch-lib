@@ -43,26 +43,6 @@ export abstract class Gallery extends NativePage {
   }
 
   /**
-   * Asserts that the gallery is open
-   */
-  async assertOpen() {
-    await this.app.assert.ok(
-      await this.isOpen(),
-      "Should open your device photo gallery",
-    );
-  }
-
-  /**
-   * Asserts that the gallery is closed
-   */
-  async assertClosed() {
-    await this.app.assert.ok(
-      !(await this.isOpen()),
-      "Should close your device photo gallery",
-    );
-  }
-
-  /**
    * Click a photo
    *
    * @param index - The 0-based index of which photo in the gallery to click

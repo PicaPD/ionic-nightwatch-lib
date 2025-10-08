@@ -49,20 +49,6 @@ export abstract class Camera extends NativePage {
   }
 
   /**
-   * Asserts that the camera app is open
-   */
-  async assertOpen() {
-    await this.app.assert.ok(await this.isOpen(), "Should open the camera");
-  }
-
-  /**
-   * Asserts that the camera app is closed
-   */
-  async assertClosed() {
-    await this.app.assert.ok(!(await this.isOpen()), "Should open the camera");
-  }
-
-  /**
    * Verifies that a back button exists
    */
   abstract verifyBack(): Promise<void>;
