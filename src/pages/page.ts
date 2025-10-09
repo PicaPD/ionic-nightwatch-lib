@@ -26,7 +26,7 @@ export abstract class Page {
 
     // Context switching on iOS is fragile and the best way
     // I've found to reliably change is to RELAUNCH THE GOSHDARN APP
-    if ((await app.options.desiredCapabilities?.["platformName"]) === "ios") {
+    if (app.options.desiredCapabilities?.["platformName"] === "ios") {
       console.log("Relaunching the app");
       // Terminate the app
       const bundleId =
