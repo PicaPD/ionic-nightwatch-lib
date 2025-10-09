@@ -155,7 +155,7 @@ export abstract class IonPage extends Page {
    * For iOS, uses Safari to open the custom URL scheme.
    * For Android, uses mobile:deepLink (Appium-specific).
    */
-  async open() {
+  async open(timeout?: number) {
     const pkg = "io.app.oversea";
     // Open the link
     await this.app.execute("mobile: deepLink" as any, [
@@ -164,7 +164,10 @@ export abstract class IonPage extends Page {
         package: pkg,
       },
     ]);
-    await this.app.waitForElementPresent(this.page);
+    await this.app.waitForElementPresent(
+      this.page,
+      timeout ? timeout : this.app.globals.waitForConditionTimeout,
+    );
   }
 
   public static getOpenAppXPath(ion_app: string) {
