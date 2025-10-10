@@ -67,6 +67,7 @@ export abstract class Camera extends NativePage {
     await Page.toNative(this.app);
     await this.app.click(this.shutterBtn);
     await this.app.click(this.okBtn);
+    await this.app.pause(3_000);
     await Page.toWeb(this.app);
   }
 }
