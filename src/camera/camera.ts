@@ -63,11 +63,15 @@ export abstract class Camera extends NativePage {
    * @remarks
    * Camera app must already be open for this to work
    */
-  async takePicture() {
+  async takePicture(callback?: () => Promise<void>) {
     await Page.toNative(this.app);
     await this.app.click(this.shutterBtn);
     await this.app.click(this.okBtn);
+    if (callback) {
+      await callback();
+    }
     await this.app.pause(3_000);
+
     await Page.toWeb(this.app);
   }
 }

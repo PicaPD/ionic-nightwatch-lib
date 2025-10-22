@@ -1,5 +1,5 @@
 import { NightwatchAPI } from "nightwatch";
-import { IonPage } from "../pages/page";
+import { Page, IonPage } from "../pages/page";
 
 export abstract class Element {
   // Constant Selenium element ID

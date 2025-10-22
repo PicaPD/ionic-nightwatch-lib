@@ -30,10 +30,7 @@ export async function findCameraType(app: NightwatchAPI): Promise<Camera> {
   // Avoid multiple context switches
   await Page.toNative(app);
   for (const cameraType of knownCameraTypes) {
-    const result = await app.isPresent({
-      selector: cameraType.page,
-      suppressNotFoundErrors: true,
-    });
+    const result = await cameraType.waitToBeOpen();
     if (result) {
       console.log(`Found camera package: ${cameraType.constructor.name}`);
       return cameraType;

@@ -196,4 +196,41 @@ export abstract class NativePage extends Page {
     }
     return result;
   }
+
+  /**
+   * Determine if the page is open using a wait-and-see method
+   * Does not go back to Webview
+   *
+   * @param timeout how long to wait for the page to be in the DOM
+   *
+   * @returns true if the page was found within the timeout
+   */
+  async waitToBeOpen(timeout?: number) {
+    await Page.toNative(this.app);
+    const waitTime =
+      timeout ?? this.app.globals.waitForConditionTimeout ?? Page.FALLBACK_WAIT;
+    const start = Date.now();
+    let now = start;
+    while (
+      !(await this.app.isPresent({
+        selector: this.page,
+        suppressNotFoundErrors: true,
+      }))
+    ) {
+      now = Date.now();
+      if (now - start > waitTime) {
+        console.log(
+          `  \x1b[33m!\x1b[0m Page ${this.page} was not present after ${now - start} milliseconds.`,
+        );
+        return false;
+      }
+      await new Promise((f) =>
+        setTimeout(f, this.app.globals.waitForConditionPollInterval),
+      );
+    }
+    console.log(
+      `  \x1b[32m✔\x1b[0m Page ${this.page} was present after ${now - start} milliseconds.`,
+    );
+    return true;
+  }
 }

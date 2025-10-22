@@ -47,10 +47,15 @@ export abstract class Gallery extends NativePage {
    *
    * @param index - The 0-based index of which photo in the gallery to click
    */
-  async choosePhoto(index: number) {
+  async choosePhoto(index: number, callback?: () => Promise<void>) {
     await Page.toNative(this.app);
     const photos = await this.app.findElements(this.photo);
     await this.app.elementIdClick(photos[index][Element.ELEMENT_ID]);
+    await this.app.waitForElementNotPresent(this.page);
+    if (callback) {
+      console.log("Executing Callback");
+      await callback();
+    }
     await Page.toWeb(this.app);
   }
 

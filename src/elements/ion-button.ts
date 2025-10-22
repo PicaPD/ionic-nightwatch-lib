@@ -28,7 +28,7 @@ export class IonButton extends IonElement {
    *  Optional. Defaults to globals.waitForConditionTimeout
    * @returns true if the element is clickable
    */
-  public async safeWaitToBeClickable(timeout?: number) {
+  public async waitToBeClickable(timeout?: number) {
     const waitTime =
       timeout ??
       this.app.globals.waitForConditionTimeout ??
@@ -49,6 +49,37 @@ export class IonButton extends IonElement {
     }
     console.log(
       `  \x1b[32m✔\x1b[0m Element ${this.getXPath()} was clickable after ${now - start} milliseconds.`,
+    );
+    return true;
+  }
+
+  /**
+   * Wait for an element to be clickable without throwing an error
+   * @param timeout how long to wait for the element (ms)
+   *  Optional. Defaults to globals.waitForConditionTimeout
+   * @returns true if the element is clickable
+   */
+  public async waitToBeDisabled(timeout?: number) {
+    const waitTime =
+      timeout ??
+      this.app.globals.waitForConditionTimeout ??
+      IonButton.FALLBACK_WAIT;
+    const start = Date.now();
+    let now = start;
+    while (await this.isClickable()) {
+      now = Date.now();
+      if (now - start > waitTime) {
+        console.log(
+          `  \x1b[33m!\x1b[0m Element ${this.getXPath()} was clickable after ${now - start} milliseconds.`,
+        );
+        return false;
+      }
+      await new Promise((f) =>
+        setTimeout(f, this.app.globals.waitForConditionPollInterval),
+      );
+    }
+    console.log(
+      `  \x1b[32m✔\x1b[0m Element ${this.getXPath()} was not clickable after ${now - start} milliseconds.`,
     );
     return true;
   }
