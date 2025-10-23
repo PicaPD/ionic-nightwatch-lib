@@ -29,7 +29,7 @@ export class IonCard extends IonElement {
       this.xpath = `${IonPage.getOpenAppXPath(ion_app)}//ion-card[contains(@class, '${cardType}')][${index + 1}]`;
       this.css = `${ion_app}:not(.ion-page-hidden) ion-card.${cardType}:nth-of-type(${index + 1})`;
     } else {
-      this.xpath = `${IonPage.getOpenAppXPath(ion_app)}//ion-card[@class='md hydrated'][${index + 1}]`;
+      this.xpath = `${IonPage.getOpenAppXPath(ion_app)}//ion-card[contains(@class,'hydrated')][${index + 1}]`;
       // Not exclusive
       this.css = `${ion_app}:not(.ion-page-hidden) ion-card.md.hydrated:nth-of-type(${index + 1})`;
     }
