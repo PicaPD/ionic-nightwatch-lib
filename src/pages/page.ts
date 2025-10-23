@@ -3,6 +3,7 @@
  */
 import { NightwatchAPI } from "nightwatch";
 import { Element } from "../elements/elements";
+import { waitToBeGone, waitToBePresent } from "../tools/safeQuery";
 
 export abstract class Page {
   // Fallback if this.app.globals.waitForConditionTimeout is undefined
@@ -68,11 +69,31 @@ export abstract class Page {
   }
 
   /**
-   * A simple wrapper for the waitForElementPresent
-   * on this.page
+   * Wait for a page to load
+   *
+   * @param timeout - Returns false if the page is not found in
+   *  this many milliseconds.
+   *  Optional. Defaults to global waitForConditionTimeout
+   *
+   * @returns true if the page is present in the DOM before
+   *  the method times out
    */
-  public async waitToLoad() {
-    await this.app.waitForElementPresent(this.page);
+  public async isLoaded(timeout?: number) {
+    return await waitToBePresent(this.app, this.page, timeout);
+  }
+
+  /**
+   * Wait for a page to be gone
+   *
+   * @param timeout - Returns false if the page is still found after
+   *  this many milliseconds.
+   *  Optional. Defaults to global waitForConditionTimeout
+   *
+   * @returns true if the page is not present in the DOM before
+   *  the method times out
+   */
+  public async isGone(timeout?: number) {
+    return await waitToBeGone(this.app, this.page, timeout);
   }
 
   /**
@@ -156,18 +177,28 @@ export abstract class IonPage extends Page {
    * For Android, uses mobile:deepLink (Appium-specific).
    */
   async open(timeout?: number) {
+    console.log(`Opening ${this.deepLink}`);
+
+    // 3 attempts
+    for (let i = 0; i < 3; i++) {
+      // Open the link
+      await this.executeDeepLink();
+      if (await this.isLoaded()) {
+        return;
+      } else {
+        console.log(`Could not open page: attempt ${i + 1} / 3`);
+      }
+    }
+  }
+
+  protected async executeDeepLink() {
     const pkg = "io.app.oversea";
-    // Open the link
     await this.app.execute("mobile: deepLink" as any, [
       {
         url: this.deepLink,
         package: pkg,
       },
     ]);
-    await this.app.waitForElementPresent(
-      this.page,
-      timeout ? timeout : this.app.globals.waitForConditionTimeout,
-    );
   }
 
   public static getOpenAppXPath(ion_app: string) {
@@ -182,55 +213,15 @@ export abstract class NativePage extends Page {
    *
    * @returns true if the page is open
    */
-  async isOpen() {
+  async isLoaded() {
     // Change to native
     await Page.toNative(this.app);
-    const result = await this.app.isPresent({
-      selector: this.page,
-      suppressNotFoundErrors: true,
-    });
+    const result = await super.isLoaded();
 
     // Switching to web on a native page in iOS will crash
     if (!result) {
       await Page.toWeb(this.app);
     }
     return result;
-  }
-
-  /**
-   * Determine if the page is open using a wait-and-see method
-   * Does not go back to Webview
-   *
-   * @param timeout how long to wait for the page to be in the DOM
-   *
-   * @returns true if the page was found within the timeout
-   */
-  async waitToBeOpen(timeout?: number) {
-    await Page.toNative(this.app);
-    const waitTime =
-      timeout ?? this.app.globals.waitForConditionTimeout ?? Page.FALLBACK_WAIT;
-    const start = Date.now();
-    let now = start;
-    while (
-      !(await this.app.isPresent({
-        selector: this.page,
-        suppressNotFoundErrors: true,
-      }))
-    ) {
-      now = Date.now();
-      if (now - start > waitTime) {
-        console.log(
-          `  \x1b[33m!\x1b[0m Page ${this.page} was not present after ${now - start} milliseconds.`,
-        );
-        return false;
-      }
-      await new Promise((f) =>
-        setTimeout(f, this.app.globals.waitForConditionPollInterval),
-      );
-    }
-    console.log(
-      `  \x1b[32m✔\x1b[0m Page ${this.page} was present after ${now - start} milliseconds.`,
-    );
-    return true;
   }
 }

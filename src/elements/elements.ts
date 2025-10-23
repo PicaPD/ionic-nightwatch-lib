@@ -1,12 +1,11 @@
 import { NightwatchAPI } from "nightwatch";
 import { Page, IonPage } from "../pages/page";
+import { waitToBePresent, waitToBeGone } from "../tools/safeQuery";
 
 export abstract class Element {
   // Constant Selenium element ID
   public static readonly ELEMENT_ID = "element-6066-11e4-a52e-4f735466cecf";
-
-  // Fallback if this.app.globals.waitForConditionTimeout is undefined
-  protected static readonly FALLBACK_WAIT = 5_000; // milliseconds
+  protected static readonly FALLBACK_WAIT = 5_000;
 
   protected app: NightwatchAPI;
   protected abstract xpath: string;
@@ -44,17 +43,6 @@ export abstract class Element {
   }
 
   /**
-   * Query once if an element is in the DOM
-   * @returns true if the element is present in the DOM
-   */
-  private async isPresentNow() {
-    return await this.app.isPresent({
-      selector: this.xpath,
-      suppressNotFoundErrors: true,
-    });
-  }
-
-  /**
    * Wait for an element to appear in the DOM
    *
    * @param timeout - Returns false if the element is not found in
@@ -65,28 +53,7 @@ export abstract class Element {
    *  the method times out
    */
   public async isPresent(timeout?: number) {
-    const waitTime =
-      timeout ??
-      this.app.globals.waitForConditionTimeout ??
-      Element.FALLBACK_WAIT;
-    const start = Date.now();
-    let now = start;
-    while (!(await this.isPresentNow())) {
-      now = Date.now();
-      if (now - start > waitTime) {
-        console.log(
-          `  \x1b[33m!\x1b[0m Element ${this.xpath} was not present after ${now - start} milliseconds.`,
-        );
-        return false;
-      }
-      await new Promise((f) =>
-        setTimeout(f, this.app.globals.waitForConditionPollInterval),
-      );
-    }
-    console.log(
-      `  \x1b[32m✔\x1b[0m Element ${this.xpath} was present after ${now - start} milliseconds.`,
-    );
-    return true;
+    return await waitToBePresent(this.app, this.getXPath(), timeout);
   }
 
   /**
@@ -99,28 +66,7 @@ export abstract class Element {
    * @returns true if the element is not present in the DOM before the element times out
    */
   public async isGone(timeout?: number) {
-    const waitTime =
-      timeout ??
-      this.app.globals.waitForConditionTimeout ??
-      Element.FALLBACK_WAIT;
-    const start = Date.now();
-    let now = start;
-    while (await this.isPresentNow()) {
-      now = Date.now();
-      if (now - start > waitTime) {
-        console.log(
-          `  \x1b[33m!\x1b[0m Element ${this.xpath} was present after ${now - start} milliseconds.`,
-        );
-        return false;
-      }
-      await new Promise((f) =>
-        setTimeout(f, this.app.globals.waitForConditionPollInterval),
-      );
-    }
-    console.log(
-      `  \x1b[32m✔\x1b[0m Element ${this.xpath} was not present after ${now - start} milliseconds.`,
-    );
-    return true;
+    return await waitToBeGone(this.app, this.getXPath(), timeout);
   }
 
   /**

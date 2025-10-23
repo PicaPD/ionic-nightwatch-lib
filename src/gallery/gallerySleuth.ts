@@ -30,7 +30,7 @@ export async function findGalleryType(app: NightwatchAPI): Promise<Gallery> {
   // Avoid multiple context switches
   await Page.toNative(app);
   for (const galleryType of knownGalleryTypes) {
-    const result = await galleryType.waitToBeOpen();
+    const result = await galleryType.isLoaded();
     if (result) {
       console.log(`Found gallery package: ${galleryType.constructor.name}`);
       return galleryType;
