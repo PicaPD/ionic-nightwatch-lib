@@ -5,6 +5,11 @@ import { NightwatchAPI } from "nightwatch";
 import { Element } from "../elements/elements";
 import { waitToBeGone, waitToBePresent } from "../tools/safeQuery";
 
+interface IsLoadedOptions {
+  timeout?: number | undefined;
+  contextReset?: boolean | undefined;
+}
+
 export abstract class Page {
   // Fallback if this.app.globals.waitForConditionTimeout is undefined
   protected static readonly FALLBACK_WAIT = 5_000; // milliseconds
@@ -78,8 +83,8 @@ export abstract class Page {
    * @returns true if the page is present in the DOM before
    *  the method times out
    */
-  public async isLoaded(timeout?: number) {
-    return await waitToBePresent(this.app, this.page, timeout);
+  public async isLoaded(options: IsLoadedOptions = {}) {
+    return await waitToBePresent(this.app, this.page, options.timeout);
   }
 
   /**
@@ -213,13 +218,13 @@ export abstract class NativePage extends Page {
    *
    * @returns true if the page is open
    */
-  async isLoaded() {
+  async isLoaded(options: IsLoadedOptions = {}) {
     // Change to native
     await Page.toNative(this.app);
-    const result = await super.isLoaded();
+    const result = await super.isLoaded(options);
 
     // Switching to web on a native page in iOS will crash
-    if (!result) {
+    if (!result && options.contextReset) {
       await Page.toWeb(this.app);
     }
     return result;
